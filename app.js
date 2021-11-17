@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { NODE_ENV, DB_CONNECTION_STRING } = process.env;
+const { DB_CONNECTION_STRING } = process.env;
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -24,7 +24,7 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(NODE_ENV === 'production' ? DB_CONNECTION_STRING : '', {
+mongoose.connect(DB_CONNECTION_STRING, {
   useNewUrlParser: true,
 });
 
