@@ -1,11 +1,16 @@
 require('dotenv').config();
 
-const { DB_CONNECTION_STRING } = process.env;
+const {
+  DB_CONNECTION_STRING,
+  NODE_ENV,
+} = process.env;
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const { errors } = require('celebrate');
 const { celebrate, Joi } = require('celebrate');
+const helmet = require('helmet');
+const apiLimiter = require('./configs/limiter');
 const {
   createUser,
   login,
@@ -17,6 +22,7 @@ const {
   requestLogger,
   errorLogger,
 } = require('./middlewares/logger');
+const DB_LOCAL_CONNECTION_STRING = require('./configs/index');
 
 const app = express();
 const PORT = 3000;
@@ -24,11 +30,14 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(DB_CONNECTION_STRING, {
+mongoose.connect(NODE_ENV === 'production' ? DB_CONNECTION_STRING : DB_LOCAL_CONNECTION_STRING, {
   useNewUrlParser: true,
 });
 
 app.use(requestLogger);
+
+app.use(helmet());
+app.use(apiLimiter);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
