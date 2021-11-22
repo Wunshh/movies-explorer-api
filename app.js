@@ -22,7 +22,7 @@ const {
   requestLogger,
   errorLogger,
 } = require('./middlewares/logger');
-const DB_LOCAL_CONNECTION_STRING = require('./configs/index');
+const { DB_LOCAL_CONNECTION_STRING } = require('./configs/index');
 
 const app = express();
 const PORT = 3000;
