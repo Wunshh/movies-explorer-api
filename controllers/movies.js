@@ -5,7 +5,7 @@ const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.getMovie = (req, res, next) => {
   Movie.find({})
-    .then((movie) => res.status(200).send(movie))
+    .then((movie) => res.send(movie))
     .catch(next);
 };
 
@@ -40,13 +40,14 @@ module.exports.postMovie = (req, res, next) => {
     owner: ownerId,
   })
     .then((movie) => {
-      res.status(200).send(movie);
+      res.send(movie);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы невалидные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -58,7 +59,8 @@ module.exports.deleteMovie = (req, res, next) => {
         next(new ForbiddenError('Попытка удалить чужой фильм'));
       } else {
         Movie.deleteOne(movie)
-          .then(() => res.status(200).send(movie));
+          .then(() => res.send(movie))
+          .catch(next);
       }
     })
     .catch(next);

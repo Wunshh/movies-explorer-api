@@ -14,15 +14,16 @@ const {
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id).then((user) => {
     if (user) {
-      return res.status(200).send(user);
+      return res.send(user);
     }
     throw new NotFoundError('Пользователь с указанным _id не найден.');
   })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Передан невалидный _id'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -40,15 +41,16 @@ module.exports.updateUser = (req, res, next) => {
   )
     .then((user) => {
       if (user) {
-        return res.status(200).send(user);
+        return res.send(user);
       }
       throw new NotFoundError('Пользователь с указанным _id не найден.');
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Передан невалидные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -65,12 +67,13 @@ module.exports.createUser = (req, res, next) => {
     bcrypt.hash(req.body.password, SOLT_ROUND).then((hash) => User.create({
       name, email, password: hash,
     })
-      .then(() => res.status(200).send({ message: 'Вы успешно зарегистрировались' }))
+      .then(() => res.send({ message: 'Вы успешно зарегистрировались' }))
       .catch((err) => {
         if (err.name === 'ValidationError') {
           next(new BadRequestError('Передан невалидные данные'));
+        } else {
+          next(err);
         }
-        next(err);
       }));
   })
     .catch(next);
