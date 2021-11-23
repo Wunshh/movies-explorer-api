@@ -44,7 +44,7 @@ router.post('/movies', celebrate({
     movieId: Joi.string().length(24).hex(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
-  })
+  }),
 }), postMovie);
 
 module.exports = router;
