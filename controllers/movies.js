@@ -55,13 +55,19 @@ module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId)
     .orFail(() => next(new NotFoundError('Фильм с указанным _id не найден')))
     .then((movie) => {
-      if (!movie.owner.equals(req.user._id)) {
-        next(new ForbiddenError('Попытка удалить чужой фильм'));
-      } else {
-        Movie.deleteOne(movie)
-          .then(() => res.send(movie))
-          .catch(next);
+      if (movie.owner.equals(req.user._id)) {
+        return movie.remove()
+          .then(() => {
+            res.send({ message: 'Фильм удален' });
+          });
       }
+      throw new ForbiddenError('Нельзя удалить чужой фильм');
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        next(new BadRequestError('Переданы невалидные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
