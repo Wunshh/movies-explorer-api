@@ -40,8 +40,7 @@ router.post('/movies', celebrate({
       }
       return helper.message('Невалидная ссылка');
     }),
-    owner: Joi.string().length(24).hex(),
-    movieId: Joi.string().length(24).hex(),
+    movieId: Joi.number().integer().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),
